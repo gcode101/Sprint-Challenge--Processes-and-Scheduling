@@ -7,7 +7,7 @@
 
 #define MAX_TOKENS 100
 #define COMMANDLINE_BUFSIZE 1024
-#define DEBUG 1  // Set to 1 to turn on some debugging output, or 0 to turn off
+#define DEBUG 0  // Set to 1 to turn on some debugging output, or 0 to turn off
 
 /**
  * Parse the command line.
@@ -32,7 +32,7 @@
 char **parse_commandline(char *str, char **args, int *args_count)
 {
     char *token;
-    
+
     *args_count = 0;
 
     token = strtok(str, " \t\n\r");
@@ -99,9 +99,18 @@ int main(void)
         }
 
         #endif
-        
+
         /* Add your code for implementing the shell's logic here */
-        
+        int rc = fork();
+        if (rc < 0) {
+            fprintf(stderr, "%s\n", "Fork failed");
+            exit(1);
+        } else if (rc == 0) {
+            execvp(args[0], &args[0]);
+        } else {
+            waitpid(rc, NULL, 0);
+        }
+
     }
 
     return 0;
